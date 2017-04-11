@@ -1,0 +1,51 @@
+.root{
+    -fx-font-size: 14px;
+}
+
+
+.label_title {
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 20px;
+    -fx-font-weight: 500;
+}
+
+
+.label_subtitle {
+    -fx-font-family: "Arial";
+    -fx-font-size: 18px;
+    -fx-font-weight: 500;
+    -fx-underline: true;
+    -fx-font-style: italic;
+}
+
+.client_menu_buttons {
+    -fx-pref-width: 200px;
+}
+
+.hbox_left {
+    -fx-background-color: white;
+}
+
+.hbox_middle {
+
+}
+
+.hbox_right {
+    -fx-background-color: white;
+}
+
+.anchorpane_color {
+    -fx-background-color: #e8e8e8;
+}
+
+.lable_padding, .checkbox_padding{
+    -fx-padding: 20, 0, 20, 0;
+}
+
+.checkbox_padding {
+    -fx-padding: 10, 0, 10, 0;
+}
+
+#text-area *.text {
+    -fx-text-alignment: center;
+}
