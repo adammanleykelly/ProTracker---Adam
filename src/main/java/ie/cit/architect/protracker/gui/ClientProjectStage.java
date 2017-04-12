@@ -1,6 +1,6 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
 import ie.cit.architect.protracker.helpers.Consts;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,9 +17,9 @@ import javafx.stage.Stage;
  */
 public class ClientProjectStage
 {
-    private MainMediator mainMediator;
+    private Mediator mainMediator;
 
-    public ClientProjectStage(MainMediator mainMediator)
+    public ClientProjectStage(Mediator mainMediator)
     {
         this.mainMediator = mainMediator;
     }

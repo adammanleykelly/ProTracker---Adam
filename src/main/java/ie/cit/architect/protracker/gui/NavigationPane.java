@@ -1,6 +1,6 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
 import ie.cit.architect.protracker.helpers.Consts;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,9 +12,9 @@ import javafx.stage.Stage;
  */
 public class NavigationPane {
 
-    private MainMediator mainMediator;
+    private Mediator mainMediator;
 
-    public NavigationPane(MainMediator mainMediator) {
+    public NavigationPane(Mediator mainMediator) {
         this.mainMediator = mainMediator;
     }
 

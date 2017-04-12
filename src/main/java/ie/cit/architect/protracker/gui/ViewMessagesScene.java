@@ -1,14 +1,17 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
 import ie.cit.architect.protracker.helpers.Consts;
-import ie.cit.architect.protracker.helpers.Utility;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 
 /**
  * Created by brian on 27/02/17.
@@ -16,16 +19,22 @@ import javafx.stage.Stage;
 public class ViewMessagesScene {
 
 
-    private MainMediator mainMediator;
+    private Mediator mediator;
 
-    public ViewMessagesScene(MainMediator mainMediator) {
-        this.mainMediator = mainMediator;
+
+    public ViewMessagesScene(Mediator mediator) {
+        this.mediator = mediator;
     }
 
     public void start(Stage stage) {
 
-        Scene scene = new Scene(
-                Utility.createContainer(createLeftPane(), createMiddlePane(), createRightPane()),
+        BorderPane borderPane = new BorderPane();
+        borderPane.setLeft(createLeftPane());
+        borderPane.setCenter(createMiddlePane());
+        borderPane.setRight(createRightPane());
+        borderPane.setBottom(createBottomPane());
+
+        Scene scene = new Scene(borderPane,
                 Consts.APP_WIDTH, Consts.APP_HEIGHT);
 
         scene.getStylesheets().add("/stylesheet.css");
@@ -36,9 +45,9 @@ public class ViewMessagesScene {
 
 
 
-    private VBox createLeftPane() {
-        VBox vBox = new VBox();
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+    public VBox createLeftPane() {
+        VBox vBoxLeftPane = new VBox();
+        vBoxLeftPane.setMinWidth(Consts.PANE_WIDTH);
 
         Label label = new Label("Employee: Georgia");
 
@@ -52,15 +61,15 @@ public class ViewMessagesScene {
         VBox.setMargin(label, new Insets(30,0,0,40));
         VBox.setMargin(textArea, new Insets(0,0,0,40));
 
-        vBox.getChildren().addAll(label, textArea);
+        vBoxLeftPane.getChildren().addAll(label, textArea);
 
-        return vBox;
+        return vBoxLeftPane;
     }
 
 
     private VBox createMiddlePane() {
         VBox vBox = new VBox();
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+        vBox.setMinWidth(Consts.PANE_WIDTH);
 
         Label label = new Label("Client: Joe");
 
@@ -85,7 +94,7 @@ public class ViewMessagesScene {
 
     private VBox createRightPane() {
         VBox vBox = new VBox();
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+        vBox.setMinWidth(Consts.PANE_WIDTH);
 
         Label label = new Label("Compose Message:");
 
@@ -102,6 +111,32 @@ public class ViewMessagesScene {
         vBox.getChildren().addAll(label, textArea);
 
         return vBox;
+    }
+
+
+
+    private AnchorPane createBottomPane() {
+
+        Button buttonContinue = new Button("Continue");
+        buttonContinue.setOnAction(event -> {
+            System.out.println("hello");
+        });
+
+        Button buttonCancel = new Button("Cancel");
+        buttonCancel.setOnAction(event -> mediator.changeToArchitectMenuScene());
+
+        // layout
+        AnchorPane anchorPane = new AnchorPane();
+        anchorPane.getStyleClass().add("anchorpane_color");
+        AnchorPane.setTopAnchor(buttonCancel, 10.0);
+        AnchorPane.setBottomAnchor(buttonCancel, 10.0);
+        AnchorPane.setRightAnchor(buttonCancel, 150.0);
+        AnchorPane.setBottomAnchor(buttonContinue, 10.0);
+        AnchorPane.setRightAnchor(buttonContinue, 10.0);
+
+        anchorPane.getChildren().addAll(buttonCancel, buttonContinue);
+
+        return anchorPane;
     }
 
 }

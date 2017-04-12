@@ -1,12 +1,15 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
+import ie.cit.architect.protracker.controller.DBController;
+import ie.cit.architect.protracker.controller.PersistenceMode;
 import ie.cit.architect.protracker.helpers.Consts;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -16,19 +19,21 @@ import javafx.stage.Stage;
 
 public class HomeScene {
 
-    private MainMediator mainMediator;
+    private Mediator mediator;
 
-    // Composition - passing a reference of MainMediator to HomeScene's constructor. Now HomeScene 'has-a' MainMediator
-    public HomeScene(MainMediator mediator) {
-        this.mainMediator = mediator;
+    // Composition - passing a reference of Mediator to HomeScene's constructor. Now HomeScene 'has-a' Mediator
+    public HomeScene(Mediator mediator) {
+        this.mediator = mediator;
     }
 
-    private Button buttonSignInArchitect;
+    private Button buttonSignInArchitect, buttonMySQL, buttonMongoDB;
     private Button buttonSignInClient;
     private CustomArchitectDialog customArchitectDialog;
 
 
     public void start(Stage stage) throws Exception {
+
+        DBController.getInstance().setPersistenceMode(PersistenceMode.MONGODB);
 
         // check the Operating System
         System.out.println(System.getProperty("os.name"));
@@ -60,9 +65,17 @@ public class HomeScene {
         buttonSignInClient.setMinWidth(150);
         buttonSignInArchitect.setMinWidth(150);
 
+//        buttonMySQL = new Button("MySQL");
+//        buttonMySQL.setOnAction(event ->
+//                DBController.getInstance().setPersistenceMode(PersistenceMode.MYSQL));
+//
+//        buttonMongoDB = new Button("MongoDB");
+//
+//        Platform.runLater(() -> buttonMongoDB.setOnAction(event ->
+//                DBController.getInstance().setPersistenceMode(PersistenceMode.MONGODB)));
 
-        buttonSignInClient.setOnAction(event -> mainMediator.changeToClientCustomDialog());
-        buttonSignInArchitect.setOnAction(event -> mainMediator.changeToArchitectCustomDialog());
+        buttonSignInClient.setOnAction(event -> mediator.changeToClientCustomDialog());
+        buttonSignInArchitect.setOnAction(event -> mediator.changeToArchitectCustomDialog());
 
 
         gridPane.add(iview1, 0, 1);
@@ -71,12 +84,21 @@ public class HomeScene {
         gridPane.add(labelSubTitle, 0, 2);
         GridPane.setHalignment(labelSubTitle, HPos.CENTER);
 
-        gridPane.add(buttonSignInClient, 0, 4);
+        gridPane.add(buttonSignInClient, 0, 5);
         GridPane.setHalignment(buttonSignInClient, HPos.CENTER);
 
-        gridPane.add(buttonSignInArchitect, 0, 5);
+        gridPane.add(buttonSignInArchitect, 0, 6);
         GridPane.setHalignment(buttonSignInArchitect, HPos.CENTER);
+
+
+//        //test
+//        gridPane.add(buttonMySQL, 0, 10);
+//        gridPane.add(buttonMongoDB, 1, 10);
+
+
 
         return gridPane;
     }
+
+
 }

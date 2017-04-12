@@ -1,17 +1,23 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
+import ie.cit.architect.protracker.controller.DBController;
 import ie.cit.architect.protracker.helpers.Consts;
-import ie.cit.architect.protracker.helpers.Utility;
+import ie.cit.architect.protracker.model.Project;
+import ie.cit.architect.protracker.persistors.MongoDBPersistor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -19,8 +25,8 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * Created by brian on 27/02/17.
@@ -28,29 +34,44 @@ import java.util.List;
 public class ManageProjectScene {
 
 
-    private CheckBox[] checkBoxes = new CheckBox[21];
+    private String projectName;
     private static final String CURR_DIR = "src/main/resources";
     private static final String TXT_FILE_DESC = "txt files (*.txt)";
     private static final String TXT_FILE_EXT = "*.txt";
+    private VBox vBoxMiddlePane;
+    private ObservableList<CheckBox> checkBoxList;
+    private ObservableList<Label> labelList;
+    private Button buttonDelete, buttonRename;
+    private Label labelDate;
+    private String editDialogInput;
+    private HBox hBoxProject;
 
-    private MainMediator mainMediator;
 
-    public ManageProjectScene(MainMediator mainMediator) {
-        this.mainMediator = mainMediator;
+    private Mediator mediator;
+
+    public ManageProjectScene(Mediator mediator) {
+        this.mediator = mediator;
+        checkBoxList = FXCollections.observableArrayList();
+        labelList = FXCollections.observableArrayList();
     }
 
 
     public void start(Stage stage) {
 
-        createCheckboxArray();
+        BorderPane borderPane = new BorderPane();
+        borderPane.setLeft(createLeftPane());
+        borderPane.setCenter(createMiddlePane());
+        borderPane.setRight(createRightPane());
+        borderPane.setBottom(createBottomPane());
 
+        int sceneWidth = 1000;
         Scene scene = new Scene(
-                Utility.createContainer(createLeftPane(), createMiddlePane(), createRightPane()),
-                Consts.APP_WIDTH, Consts.APP_HEIGHT);
+                borderPane,
+                sceneWidth, Consts.APP_HEIGHT);
 
         scene.getStylesheets().add("/stylesheet.css");
         stage.setScene(scene);
-        stage.setTitle(Consts.APPLICATION_TITLE + " Manage Project");
+        stage.setTitle(Consts.APPLICATION_TITLE + " Manage project");
         stage.show();
     }
 
@@ -58,52 +79,57 @@ public class ManageProjectScene {
     private VBox createRightPane() {
         VBox vBox = new VBox();
         vBox.getStyleClass().add("hbox_left");
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+        vBox.setMinWidth(Consts.PANE_WIDTH);
 
-        Button button1 = new Button("Open");
-        button1.setOnAction(event -> openDocument());
-        Button button2 = new Button("View Stage");
-        Button button3 = new Button("Rename");
-        Button button4 = new Button("Delete");
+        Button buttonOpen = new Button("Open");
+        buttonOpen.setOnAction(event -> openDocument());
+        Button buttonViewStage = new Button("View Stage");
+        buttonRename = new Button("Rename");
+        buttonRename.setOnAction(event -> updateNameDialog());
+        buttonRename.setDisable(true);
+
+        buttonDelete = new Button("Delete");
+        buttonDelete.setOnAction(event -> deleteProject());
+
         ObservableList<Button> buttonList =
-                FXCollections.observableArrayList(button1, button2, button3, button4);
+                FXCollections.observableArrayList(buttonOpen, buttonViewStage, buttonRename, buttonDelete);
 
         for (Button button : buttonList) {
             button.setFocusTraversable(false);
             button.setMinWidth(150);
             VBox.setMargin(button, new Insets(0, 37.5, 50, 37.5));
-
         }
 
-        // Labels
-        Label label1 = new Label("Operations:");
+        Label labelOperations = new Label("Operations:");
 
-
-        VBox.setMargin(label1, new Insets(30, 0, 50, 10));
+        VBox.setMargin(labelOperations, new Insets(30, 0, 50, 10));
 
         // add controls to VBox
-        vBox.getChildren().addAll(label1, button1, button2, button3, button4);
+        vBox.getChildren().addAll(labelOperations, buttonOpen, buttonViewStage, buttonRename, buttonDelete);
 
         return vBox;
     }
 
+
+
+
     private ScrollPane createMiddlePane() {
+
+        vBoxMiddlePane = new VBox();
+        vBoxMiddlePane.getStyleClass().add("hbox_middle");
+        int paneWidth = 300;
+        vBoxMiddlePane.setMinWidth(paneWidth);
+
+        Label labelName = new Label("Name");
+        Label labelDateModified = new Label("Date Modified");
+        HBox.setMargin(labelName, new Insets(10, 0, 0, 35));
+        HBox.setMargin(labelDateModified, new Insets(10, 0, 0, 135));
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(labelName, labelDateModified);
         VBox vBox = new VBox();
-        vBox.getStyleClass().add("hbox_middle");
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+        vBox.getChildren().addAll(hBox, vBoxMiddlePane);
 
-        Label label = new Label("Select project:");
-
-        vBox.getChildren().add(label);
-
-        for (CheckBox checkBox :
-                checkBoxes) {
-            checkBox.setOnAction(event -> System.out.println(checkBox.selectedProperty().getValue()));
-            checkBox.getStyleClass().add("checkbox_padding");
-            vBox.getChildren().add(checkBox);
-        }
-
-        VBox.setMargin(label, new Insets(30, 0, 10, 10));
+        createCheckboxArray();
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
@@ -114,17 +140,97 @@ public class ManageProjectScene {
     }
 
 
+
+    /**
+     * CheckBoxes populated with the project 'name' field from MongoDB
+     * @see DBController#selectRecords()
+     * @see MongoDBPersistor#getProjectNameList()
+     */
     private void createCheckboxArray() {
 
-        List<String> text = Arrays.asList(
-                "Project Name", "Project Name", "Project Name", "Project Name", "Project Name", "Project Name", "Project Name",
-                "Project Name", "Project Name", "Project Name", "Project Name", "Project Name", "Project Name", "Project Name",
-                "Project Name", "Project Name", "Project Name", "Project Name", "Project Name", "Project Name", "Project Name");
+        ArrayList<Project> projectArrayList = DBController.getInstance().selectRecords();
 
-        for (int i = 0; i < checkBoxes.length; i++) {
-            checkBoxes[i] = new CheckBox((i + 1) + " " + text.get(i));
+        for(Project project : projectArrayList) {
+
+            CheckBox checkBox = new CheckBox(project.getName());
+
+            labelDate = new Label(project.getFormattedDate());
+
+            checkBoxList.add(checkBox);
+            labelList.add(labelDate);
+
+            hBoxProject = new HBox();
+            labelDate.getStyleClass().add("label_padding");
+
+            checkBox.getStyleClass().add("checkbox_padding");
+            hBoxProject.getChildren().addAll(checkBox, labelDate);
+
+            vBoxMiddlePane.getChildren().add(hBoxProject);
+        }
+
+        getProjectName();
+
+    }
+
+
+
+    private String getProjectName() {
+        for(CheckBox checkBox : checkBoxList) {
+            checkBox.setOnAction(event -> {
+                buttonRename.setDisable(false);
+                projectName =  checkBox.getText();
+            });
+
+            removeControlsFromScrollPane();
+        }
+        return projectName;
+    }
+
+
+    private void removeControlsFromScrollPane() {
+        for (int i = 0; i < checkBoxList.size(); i++) {
+            if(checkBoxList.get(i).isSelected()) {
+                checkBoxList.get(i).setVisible(false);
+                checkBoxList.get(i).setManaged(false);
+                labelList.get(i).setVisible(false);
+                labelList.get(i).setManaged(false);
+            }
         }
     }
+
+
+    private void updateNameDialog() {
+        Dialog dialog = new TextInputDialog();
+        dialog.setTitle("Edit Project Name");
+        dialog.setHeaderText("Enter the new project name");
+
+        Optional<String> result = dialog.showAndWait();
+
+        if(result.isPresent()) {
+            editDialogInput = result.get();
+            System.out.println(editDialogInput);
+        }
+
+        editProjectName();
+
+
+        vBoxMiddlePane.getChildren().clear();
+
+        createCheckboxArray();
+    }
+
+
+    // Update
+    private void editProjectName() { DBController.getInstance().updateProjectName(projectName, editDialogInput); }
+
+
+    // Delete
+    // 'deleteButton' listener which calls the Controller to remove the selected project from the database
+    private void deleteProject() {
+        DBController.getInstance().deleteProject(getProjectName());
+    }
+
+
 
 
     private VBox createLeftPane() {
@@ -137,6 +243,7 @@ public class ManageProjectScene {
 
 
         TextField textField = new TextField();
+
         VBox.setMargin(textField, new Insets(0, 37.5, 0, 37.5));
 
 
@@ -146,9 +253,34 @@ public class ManageProjectScene {
     }
 
 
-    public void openDocument() {
+    private AnchorPane createBottomPane() {
 
-        File myFile = null;
+        Button buttonContinue = new Button("Continue");
+        buttonContinue.setOnAction(event -> {
+            mediator.changeToArchitectMenuScene();
+        });
+
+        Button buttonCancel = new Button("Cancel");
+        buttonCancel.setOnAction(event -> mediator.changeToArchitectMenuScene());
+
+        // layout
+        AnchorPane anchorPane = new AnchorPane();
+        anchorPane.getStyleClass().add("anchorpane_color");
+        AnchorPane.setTopAnchor(buttonCancel, 10.0);
+        AnchorPane.setBottomAnchor(buttonCancel, 10.0);
+        AnchorPane.setRightAnchor(buttonCancel, 150.0);
+        AnchorPane.setBottomAnchor(buttonContinue, 10.0);
+        AnchorPane.setRightAnchor(buttonContinue, 10.0);
+
+        anchorPane.getChildren().addAll(buttonCancel, buttonContinue);
+
+        return anchorPane;
+    }
+
+
+    private void openDocument() {
+
+        File myFile;
 
         FileChooser fileChooser = new FileChooser();
 

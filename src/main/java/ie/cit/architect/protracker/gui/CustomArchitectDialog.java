@@ -1,9 +1,10 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
+import ie.cit.architect.protracker.controller.Controller;
 import ie.cit.architect.protracker.controller.DBController;
+import ie.cit.architect.protracker.model.IUser;
 import ie.cit.architect.protracker.model.User;
-import ie.cit.architect.protracker.model.UserArchitect;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -21,25 +22,28 @@ import java.util.Optional;
 public class CustomArchitectDialog
 {
 
-    private MainMediator mainMediator;
+    private Mediator mediator;
+    private Dialog<Pair<String, String>> dialog;
+    private String userEmail;
+    private String userPass;
 
 
-    public CustomArchitectDialog(MainMediator mediator) {
-        this.mainMediator = mediator;
+    public CustomArchitectDialog(Mediator mediator) {
+        this.mediator = mediator;
     }
 
 
     // Custom Dialog ref: http://code.makery.ch/blog/javafx-dialogs-official/
     public Dialog<Pair<String, String>> signInArchitectDialog() {
 
+
         // Create the custom dialog.
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog = new Dialog<>();
         dialog.setTitle("Login Architect");
         dialog.setHeaderText("Please Sign In");
 
         // Set the icon (must be included in the project).
         dialog.setGraphic(new ImageView(this.getClass().getResource("/login_icon_architect.png").toString()));
-
 
 
         // Set the button types.
@@ -76,8 +80,13 @@ public class CustomArchitectDialog
         gridPane.getColumnConstraints().addAll(col1, col2);
 
 
+        Button button = (Button) dialog.getDialogPane().lookupButton(loginButtonType);
+        button.setOnAction(event -> mediator.changeToArchitectMenuScene());
+
         // Enable/Disable login button depending on whether a username was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+
+
 
         //TODO : change to true and uncomment code after testing
         loginButton.setDisable(false);
@@ -107,40 +116,44 @@ public class CustomArchitectDialog
 
         // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
+
+
             if (dialogButton == loginButtonType) {
+
+                mediator.changeToArchitectMenuScene();
+
                 return new Pair<>(textFieldEmail.getText(), password.getText());
             }
+
             return null;
         });
 
-
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
-        result.ifPresent(emailPass -> {
-
-            String userEmail = emailPass.getKey();
-            String userPass = emailPass.getValue();
-
-            User user = UserArchitect.getInstance(userEmail, userPass);
-
-
-            mainMediator.changeToArchitectMenuScene();
-
-            if(user != null) {
-                DBController.getInstance().addUser(user);
-            }
-
-            DBController.getInstance().saveUser();
-
-
-
-            if (user != null)
-                System.out.println(user.toString());
-
+        result.ifPresent(emailPassword -> {
+            userEmail = emailPassword.getKey();
+            userPass = emailPassword.getValue();
         });
+
+        Platform.runLater(() -> addUserToDB());
 
         return dialog;
 
     }
 
+    public void addUserToDB() {
+
+        IUser user = Controller.getInstance().createUser(userEmail, userPass);
+
+        if (user != null) {
+            DBController.getInstance().addUser((User) user);
+        }
+
+        DBController.getInstance().saveUser();
+
+    }
 }
+
+
+
+

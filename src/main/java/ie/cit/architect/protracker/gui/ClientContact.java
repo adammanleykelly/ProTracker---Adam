@@ -1,6 +1,6 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
 import ie.cit.architect.protracker.helpers.Consts;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,9 +21,9 @@ import javafx.scene.text.Font;
  */
 public class ClientContact
 {
-    private MainMediator mainMediator;
+    private Mediator mainMediator;
 
-    public ClientContact(MainMediator mainMediator)
+    public ClientContact(Mediator mainMediator)
     {
         this.mainMediator = mainMediator;
     }

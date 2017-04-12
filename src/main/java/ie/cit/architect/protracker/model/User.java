@@ -2,7 +2,6 @@ package ie.cit.architect.protracker.model;
 
 import ie.cit.architect.protracker.helpers.Consts;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +13,11 @@ public class User implements IUser{
     private String name;
     private String password;
     private String emailAddress;
-    private ArrayList<User> users;
+
+
+    private IProject project;
+
+    public User() {  }
 
     public User(String emailAddress) { this.emailAddress = emailAddress; }
 
@@ -24,15 +27,17 @@ public class User implements IUser{
 
     }
 
-    public static User getInstance(String emailAddress, String password) {
-        return new User(emailAddress, password);
+    @Override
+    public void setProject(IProject project) {
+        this.project = project;
     }
 
-    public static User getInstance(String emailAddress) {
-        return new User(emailAddress);
+    @Override
+    public IProject getProject() {
+        return project;
     }
 
-
+    @Override
     public String getName() {
         return name;
     }
@@ -49,6 +54,7 @@ public class User implements IUser{
         this.password = password;
     }
 
+    @Override
     public String getEmailAddress() {
         return emailAddress;
     }
@@ -57,9 +63,8 @@ public class User implements IUser{
         this.emailAddress = emailAddress;
     }
 
-    public ArrayList<User> getUsers() { return this.users; }
 
-    public boolean isEmailValid(String eMail) {
+    boolean isEmailValid(String eMail) {
 
         if(eMail != null) {
             Pattern pattern = Pattern.compile(Consts.VALID_EMAIL_REGEX);
@@ -70,25 +75,19 @@ public class User implements IUser{
     }
 
 
-    public boolean isNameValid(String fName) {
+    boolean isNameValid() {
         if (getName().matches(Consts.VALID_NAME)) {
             return true;
         }
         return false;
     }
 
+
     @Override
     public String toString() {
-        return "UserEmployee{" +
-                ", password='" + password + '\'' +
+        return "User{" +
+                "password='" + password + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 '}';
     }
-
-    @Override
-    public String speak() {
-        return "I'm a user";
-    }
-
-
 }

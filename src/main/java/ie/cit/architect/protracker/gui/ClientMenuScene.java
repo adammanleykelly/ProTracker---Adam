@@ -1,6 +1,6 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
 import ie.cit.architect.protracker.helpers.Consts;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,9 +18,18 @@ import java.util.List;
  */
 public class ClientMenuScene
 {
-    private MainMediator mainMediator;
+    private Mediator mainMediator;
 
-    public ClientMenuScene(MainMediator mainMediator)
+       /**
+     * Each GUI class has a constructor that passes a Mediator object.
+     * Within this (and other GUI classes), this mediator reference will pass the selected stage
+     * back to the Mediator, which will in turn 'start' that stage.
+     * @see #createClientMenu() () -> ...mediator.changeToViewMessagesScene();
+     * Reference:
+     * @link { http://stackoverflow.com/a/14168529/5942254 }
+     */
+
+    public ClientMenuScene(Mediator mainMediator)
     {
         this.mainMediator = mainMediator;
     }

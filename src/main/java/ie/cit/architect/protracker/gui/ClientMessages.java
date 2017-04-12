@@ -1,8 +1,8 @@
 package ie.cit.architect.protracker.gui;
 
-import ie.cit.architect.protracker.App.MainMediator;
+import ie.cit.architect.protracker.App.Mediator;
 import ie.cit.architect.protracker.helpers.Consts;
-import ie.cit.architect.protracker.helpers.Utility;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,9 +23,9 @@ import javafx.stage.Stage;
 public class ClientMessages {
 
 
-    private MainMediator mainMediator;
+    private Mediator mainMediator;
 
-    public ClientMessages(MainMediator mainMediator) {
+    public ClientMessages(Mediator mainMediator) {
         this.mainMediator = mainMediator;
     }
 
@@ -55,7 +55,7 @@ public class ClientMessages {
 
     private VBox createLeftPane() {
         VBox vBox = new VBox();
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+        vBox.setMinWidth(Consts.PANE_WIDTH);
 
         Label label = new Label("Employee: Georgia");
 
@@ -77,7 +77,7 @@ public class ClientMessages {
 
     private VBox createMiddlePane() {
         VBox vBox = new VBox();
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+        vBox.setMinWidth(Consts.PANE_WIDTH);
 
         Label label = new Label("Client: Joe");
 
@@ -102,7 +102,7 @@ public class ClientMessages {
 
     private VBox createRightPane() {
         VBox vBox = new VBox();
-        vBox.setMinWidth(Consts.PANEL_WIDTH);
+        vBox.setMinWidth(Consts.PANE_WIDTH);
 
         Label label = new Label("Compose Message:");
 
