@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        html { height: 50% }
+        body { height: 50%; margin: 0; padding: 0 }
+        #map_canvas { height: 50% }
+    </style>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZj4CsOZWwx0UZeLHNwO5iOQsfchBNAlM&sensor=false">
+    </script>
+    <script type="text/javascript">
+        function initialize() {
+
+            var contentString = '<div id="content">'+
+                '<div id="siteNotice">'+
+                '</div>'+
+                '<h1 id="firstHeading" class="firstHeading">Coveney Architects</h1>'+
+                '<div id="bodyContent">'+
+                '<p>Coveney Architects is a family business based in Monkstown, Co. Cork. We are a ' +
+                '<a href="http://www.riai.ie/practice_directory/detail/coveney_associates"><b>RIAI</b></a> ' +
+                '(Royal Institute of the Architects of Ireland) registered practice.</p>'+
+                '</div>'+
+                '</div>';
+
+            var location = new google.maps.LatLng(51.849591, -8.333677)
+
+            var mapOptions = {
+                center: location,
+                zoom: 15,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+
+            var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+
+
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: 'Coveney & Associates'
+            });
+
+            marker.addListener('click', function() {
+                infowindow.open(map, marker);
+            });
+        }
+    </script>
+</head>
+<body onload="initialize()">
+<div id="map_canvas" style="width:400px; height:300px"></div>
+</body>
+</html>

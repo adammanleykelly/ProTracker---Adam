@@ -1,18 +1,19 @@
 package ie.cit.architect.protracker.persistors;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import ie.cit.architect.protracker.helpers.Credentials;
 import ie.cit.architect.protracker.model.*;
 import org.bson.Document;
 
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
-import static javafx.application.Platform.runLater;
 
 
 /**
@@ -26,7 +27,6 @@ public class MongoDBPersistor implements IPersistor {
     private ArrayList<Project> orderedArrayList;
     private String DB_NAME = "protracker";
 
-    private static int count = 0;
 
 
 
@@ -35,13 +35,13 @@ public class MongoDBPersistor implements IPersistor {
         try {
 
             //local database
-            MongoClient mongoClientConn = new MongoClient("localhost", 27017);
+//            MongoClient mongoClientConn = new MongoClient("localhost", 27017);
 
             // remote database
-//            String mongoURI = "mongodb://" + Credentials.DB_MONGO_USER + ":" + Credentials.DB_MONGO_PASS + "@" +
-//                    Credentials.DB_MONGO_IP +"/" + Credentials.DB_NAME;
-//
-//            mongoClientConn = new MongoClient( new MongoClientURI(mongoURI));
+            String mongoURI = "mongodb://" + Credentials.DB_MONGO_USER + ":" + Credentials.DB_MONGO_PASS + "@" +
+                    Credentials.DB_MONGO_IP +"/" + Credentials.DB_NAME;
+
+            MongoClient mongoClientConn = new MongoClient( new MongoClientURI(mongoURI));
 
 
             if(mongoClientConn != null) System.out.println("Connected to MongoDB!");
@@ -67,6 +67,16 @@ public class MongoDBPersistor implements IPersistor {
     }
 
 
+    // for JUnit tests
+    public User getDbUser(User user) {
+        return user;
+    }
+
+    public Project getDbProject(Project project) {
+        return project;
+    }
+
+
     @Override
     public void writeUsers(UserList users) {
         Document document = new Document();
@@ -76,13 +86,15 @@ public class MongoDBPersistor implements IPersistor {
                 document.put("password", currUser.getPassword());
             }
 
-            runLater(() -> collectionUsers.insertOne(document));
+//            runLater(() -> collectionUsers.insertOne(document));
+            collectionUsers.insertOne(document);
 
         } catch (MongoException e) {
             e.printStackTrace();
         }
 
     }
+
 
     @Override
     public void writeProjects(ProjectList projects) {
@@ -167,9 +179,6 @@ public class MongoDBPersistor implements IPersistor {
 
         orderedArrayList.addAll(projectNameHashSet);
 
-//        for (Project project : projectNameHashSet) {
-//            orderedArrayList.add(project);
-//        }
 
         /**
          * Using our Comparator method to sort the list how we choose.

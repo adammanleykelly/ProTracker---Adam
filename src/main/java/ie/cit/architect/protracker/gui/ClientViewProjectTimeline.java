@@ -6,10 +6,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 /**
@@ -28,13 +28,16 @@ public class ClientViewProjectTimeline
     {
         BorderPane pane = new BorderPane();
         pane.setTop(homeButtonContainer());
+
         pane.setCenter(createProjectTimeline());
+        pane.setPrefSize(300, 300);
+
         pane.setBottom(navButtonContainer());
 
         Scene scene = new Scene(pane, Consts.APP_WIDTH, Consts.APP_HEIGHT);
         scene.getStylesheets().add("/stylesheet.css");
         stage.setScene(scene);
-        stage.setTitle(Consts.APPLICATION_TITLE + "Project Timeline");
+        stage.setTitle(Consts.APPLICATION_TITLE + " Project Timeline");
         stage.show();
     }
 
@@ -135,3 +138,49 @@ public class ClientViewProjectTimeline
         return vb1;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
